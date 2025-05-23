@@ -1,0 +1,12 @@
+services:
+ schoolAttendanceManagement_db:
+  image: postgres:latest
+  ports:
+    - "7009:5432"
+  environment:
+    POSTGRES_USER: root
+    POSTGRES_DB: schoolAttendanceManagementdb
+    POSTGRES_PASSWORD: schoolAttendanceManagementpassword
+  volumes:
+    - ./db-data/schoolAttendanceManagement_db/:/var/lib/postgres    
+  
