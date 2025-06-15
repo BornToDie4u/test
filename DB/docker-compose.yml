@@ -10,3 +10,17 @@ services:
   volumes:
     - ./db-data/schoolAttendanceManagement_db/:/var/lib/postgres    
   
+ mongodb:
+  image: mongo:latest
+  container_name: schoolAttendanceManagement_mongodb
+  ports: 
+   - "27017:27017" # exposed mongodb ports
+  
+  environment:
+   MONGO_INITDB_ROOT_USERNAME: root
+   MONGO_INITDB_ROOT_PASSWORD: yourpassword
+   MONGO_INITDB_ROOT_DB: mongodb
+
+  volumes:
+    - ./db-data/mongodb:/data/db
+

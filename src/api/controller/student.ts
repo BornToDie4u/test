@@ -1,6 +1,8 @@
 import {StudentAttendService} from "../../services/student"
 import {SchoolCredRepos} from "../../repository/student"
 import {Request,Response, NextFunction } from "express";
+import { generateToken } from "../../utils/jwt";
+import { strict } from "assert";
 
 
 const studentService = new StudentAttendService(new SchoolCredRepos());
@@ -40,21 +42,33 @@ export const AttendanceHandler = async(
     next : NextFunction
 )=>{
     try {
-        console.log("hi")
         const {studentId} = req.body
         if (!studentId) {
             throw new Error ("enter the correct id")
         }
 
-        const answer = await studentService.Attendance(studentId);
+        // Check if already marked (via DB or token — double protection)
+        if (req.cookies?.attendance_token) {
+             res.status(403).json({ message: 'Attendance already marked' });
+        }
 
+        const answer = await studentService.Attendance(studentId);
+        
         if (answer) {
-            
-            res.status(200).json({mssg : "Attendance "})
+            console.log("hi")
+            const token = generateToken({studentId});
+
+            res.cookie("attendance_token",token , {
+                httpOnly : true,
+                maxAge : 60*60*1000,
+                sameSite : 'strict',
+
+            })
+            res.status(200).json({mssg : "Attendance updated"})
         }
 
         else throw new Error("Attendance not updated")
-
+        
         
     } catch (error) {
         return console.log(error)
@@ -72,8 +86,8 @@ export const StudProfileHandler = async(
         if (!studentId) {
             throw new Error ("enter the correct id")
         }
-        console.log("hi")
         const StudDetails = await studentService.getStud(studentId);
+        console.log(StudDetails);
 
         if (StudDetails) {
             res.status(200).json({studDetails : StudDetails})

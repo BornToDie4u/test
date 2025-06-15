@@ -9,7 +9,7 @@ export const serverapp = ()=>{
     app.use(express.urlencoded({extended:true}))
     app.use(cookieParser());
 
-   
+    console.log("hi")
     app.get("/",(req,res)=>{
         res.json({mssg : "hello world"})
     })
